@@ -1,32 +1,15 @@
-PROGNAME = tiv
+all: build/tiv
 
-OBJECTS = tiv.o
+build/tiv: build/Makefile
+	make -C build
 
-CXX      ?= g++
-CXXFLAGS ?= -O2 -fpermissive
-INSTALL  ?= install
-INSTALL_PROGRAM ?= $(INSTALL) -D
+build/Makefile: CMakeLists.txt build
+	cd build; cmake ..
 
-# https://www.gnu.org/prep/standards/html_node/Directory-Variables.html#Directory-Variables
-prefix      ?= /usr/local
-exec_prefix ?= $(prefix)
-bindir      ?= $(exec_prefix)/bin
-
-override CXXFLAGS += -std=c++17 -Wall -fexceptions
-override LDFLAGS  += -pthread
-override LDLIBS   += -lstdc++fs
-
-all: $(PROGNAME)
-
-tiv.o: CImg.h
-
-$(PROGNAME): $(OBJECTS)
-	$(CXX) $(LDFLAGS) $^ -o $@ $(LOADLIBES) $(LDLIBS)
-
-install: all
-	$(INSTALL_PROGRAM) $(PROGNAME) $(DESTDIR)$(bindir)/$(PROGNAME)
+build:
+	mkdir -p build
 
 clean:
-	$(RM) -f $(PROGNAME) *.o
+	rm -rf build
 
-.PHONY: all install clean
+.PHONY: all clean
